@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>g00glym00gly — Fernando R. Ortlieb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --green-dim: #00cc66;
+    --green-dark: #003322;
+    --green-glow: rgba(0,255,136,0.08);
+    --bg: #060a07;
+    --bg2: #0c1410;
+    --bg3: #111a14;
+    --border: rgba(0,255,136,0.15);
+    --border-bright: rgba(0,255,136,0.4);
+    --text: #c8e8d0;
+    --text-dim: #5a8068;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(6,10,7,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    color: var(--green);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-logo span { color: var(--text-dim); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav ul li a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  nav ul li a:hover { color: var(--green); }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(0,255,136,0.04) 0%, transparent 70%);
+  }
+
+  /* Grid lines background */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-tag {
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    color: #fff;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  h1 .handle {
+    display: block;
+    color: var(--green);
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    font-weight: 400;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+  }
+
+  .hero-desc {
+    max-width: 520px;
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 2rem 0 3rem;
+  }
+
+  .hero-desc strong { color: var(--text); font-weight: normal; }
+
+  .hero-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border: 1px solid var(--border-bright);
+    color: var(--green);
+    background: transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: var(--green-glow);
+    border-color: var(--green);
+  }
+
+  .btn.primary {
+    background: var(--green);
+    color: var(--bg);
+    border-color: var(--green);
+  }
+
+  .btn.primary:hover {
+    background: var(--green-dim);
+    border-color: var(--green-dim);
+  }
+
+  /* Terminal prompt blink */
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.1em;
+    background: var(--green);
+    vertical-align: text-bottom;
+    animation: blink 1.2s step-end infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Sections */
+  section {
+    padding: 6rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-family: var(--sans);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* About */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 1rem;
+    line-height: 1.9;
+  }
+
+  .about-text p strong { color: var(--text); font-weight: normal; }
+
+  .about-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    font-size: 13px;
+  }
+
+  .stat-row .label { color: var(--text-dim); }
+  .stat-row .value { color: var(--green); }
+
+  /* Projects */
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 1.5rem;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+
+  .project-card:hover {
+    border-color: var(--border-bright);
+    background: var(--bg3);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--green);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .project-card:hover::before { opacity: 1; }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+  }
+
+  .project-title {
+    font-family: var(--sans);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .project-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .badge-active { border-color: var(--green); color: var(--green); }
+  .badge-info { border-color: #4488ff; color: #4488ff; }
+  .badge-done { border-color: var(--text-dim); color: var(--text-dim); }
+
+  .project-meta {
+    font-size: 12px;
+    color: var(--green);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--green-dark);
+    color: var(--green-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-group h3 {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skill-group ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .skill-group li {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skill-group li::before {
+    content: '▸';
+    color: var(--green);
+    font-size: 10px;
+  }
+
+  /* Blog */
+  .blog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border: 1px solid var(--border);
+  }
+
+  .blog-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    transition: background 0.2s;
+    gap: 1rem;
+  }
+
+  .blog-item:last-child { border-bottom: none; }
+
+  .blog-item:hover {
+    background: var(--bg3);
+  }
+
+  .blog-item-title {
+    font-size: 14px;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+
+  .blog-item:hover .blog-item-title { color: var(--green); }
+
+  .blog-item-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .blog-coming {
+    font-size: 13px;
+    color: var(--text-dim);
+    padding: 2rem 1.25rem;
+    text-align: center;
+    background: var(--bg2);
+  }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .contact-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.9;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .contact-link:hover {
+    border-color: var(--border-bright);
+    color: var(--green);
+    background: var(--bg3);
+  }
+
+  .contact-link .link-label { color: var(--text-dim); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .contact-link .link-value { color: inherit; }
+
+  /* Divider */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Footer */
+  footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* Terminal window decoration */
+  .terminal-window {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    margin-top: 3rem;
+  }
+
+  .terminal-bar {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .terminal-body {
+    padding: 1.25rem;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 2;
+  }
+
+  .terminal-body .prompt { color: var(--green); }
+  .terminal-body .cmd { color: var(--text); }
+  .terminal-body .out { color: var(--text-dim); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    nav ul { display: none; }
+    h1 { font-size: 2.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>~/</span>g00glym00gly</div>
+  <ul>
+    <li><a href="#about">about</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#blog">blog</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero" style="max-width:100%; padding-top: 80px;">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Security Researcher &amp; Bug Bounty Hunter</div>
+    <h1>
+      Fernando<br>R. Ortlieb
+      <span class="handle">// g00glym00gly<span class="cursor"></span></span>
+    </h1>
+    <p class="hero-desc">
+      I break things responsibly. <strong>Independent security researcher</strong> focused on web application vulnerabilities — XSS, IDOR, GraphQL, and beyond. Active on <strong>Intigriti</strong>. Based in Germany.
+    </p>
+    <div class="hero-links">
+      <a href="#projects" class="btn primary">view research</a>
+      <a href="https://github.com/ortlieb" target="_blank" class="btn">GitHub</a>
+      <a href="https://app.intigriti.com/profile/g00glym00gly" target="_blank" class="btn">Intigriti</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="about">
+  <div class="section-label">01 // about</div>
+  <h2>Who I am</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        I'm <strong>Fernando R. Ortlieb</strong>, an independent security researcher with a background in engineering and a passion for understanding how systems break.
+      </p>
+      <p>
+        I approach bug bounty hunting the way a good engineer approaches a problem — methodically, with documentation, and with an honest assessment of what I find and don't find. <strong>Negative results are results too.</strong>
+      </p>
+      <p>
+        My current focus is web application security: mapping attack surfaces, testing GraphQL APIs, analyzing WAF behavior, and hunting for authentication and authorization flaws.
+      </p>
+
+      <div class="terminal-window" style="margin-top:1.5rem;">
+        <div class="terminal-bar">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">whoami</span></div>
+          <div class="out">Fernando R. Ortlieb // g00glym00gly</div>
+          <div><span class="prompt">$</span> <span class="cmd">cat focus.txt</span></div>
+          <div class="out">Web app security, GraphQL, XSS, IDOR</div>
+          <div><span class="prompt">$</span> <span class="cmd">echo $LOCATION</span></div>
+          <div class="out">Germany</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-stats">
+      <div class="stat-row">
+        <span class="label">platform</span>
+        <span class="value">Intigriti</span>
+      </div>
+      <div class="stat-row">
+        <span class="label">handle</span>
+        <span class="value">g00glym00gly</span>
+      </div>
+      <div class="stat-row">
+        <span class="label">active since</span>
+        <span class="value">2026</span>
+      </div>
+      <div class="stat-row">
+        <span class="label">primary scope</span>
+        <span class="value">web applications</span>
+      </div>
+      <div class="stat-row">
+        <span class="label">recon tools</span>
+        <span class="value">Burp Suite, crt.sh</span>
+      </div>
+      <div class="stat-row">
+        <span class="label">current level</span>
+        <span class="value">junior researcher</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="projects">
+  <div class="section-label">02 // projects</div>
+  <h2>Research</h2>
+  <div class="projects-list">
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-title">DPG Media / Libelle — Web Application Assessment</div>
+        <div class="project-badge badge-active">active</div>
+      </div>
+      <div class="project-meta">intigriti.com &nbsp;·&nbsp; Tier 2 / Tier 3 &nbsp;·&nbsp; 2026</div>
+      <div class="project-desc">
+        Black-box security assessment of Libelle.nl and its subdomain infrastructure. Conducted full recon including subdomain enumeration via certificate transparency logs, traffic analysis of Next.js and Nuxt.js frontends, and systematic testing of a GraphQL API with persisted queries. Mapped WAF behavior (Akamai), tested for IDOR across UUID-based endpoints, and performed XSS payload analysis across stored and reflected injection points. Documented all findings — including negative results — with full reproduction context.
+      </div>
+      <div class="project-tags">
+        <span class="tag">GraphQL</span>
+        <span class="tag">XSS</span>
+        <span class="tag">IDOR</span>
+        <span class="tag">Burp Suite</span>
+        <span class="tag">Akamai WAF</span>
+        <span class="tag">Next.js</span>
+        <span class="tag">Subdomain Recon</span>
+        <span class="tag">crt.sh</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-title">TryHackMe — Structured Cybersecurity Curriculum</div>
+        <div class="project-badge badge-active">ongoing</div>
+      </div>
+      <div class="project-meta">tryhackme.com &nbsp;·&nbsp; Learning Track &nbsp;·&nbsp; 2026</div>
+      <div class="project-desc">
+        Parallel learning track covering passive and active recon, network protocols, vulnerability research methodology, Metasploit on Metasploitable 2, and Linux/Windows privilege escalation. Builds the foundational toolkit that feeds directly into live bug bounty work.
+      </div>
+      <div class="project-tags">
+        <span class="tag">Recon</span>
+        <span class="tag">Metasploit</span>
+        <span class="tag">Privilege Escalation</span>
+        <span class="tag">Linux</span>
+        <span class="tag">Vulnerability Research</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="skills">
+  <div class="section-label">03 // skills</div>
+  <h2>Tools &amp; Techniques</h2>
+  <div class="skills-grid">
+    <div class="skill-group">
+      <h3>Recon</h3>
+      <ul>
+        <li>Subdomain enumeration</li>
+        <li>Certificate transparency (crt.sh)</li>
+        <li>HTTP traffic analysis</li>
+        <li>JS source analysis</li>
+        <li>Subdomain fingerprinting</li>
+      </ul>
+    </div>
+    <div class="skill-group">
+      <h3>Testing</h3>
+      <ul>
+        <li>XSS (Stored, Reflected, DOM)</li>
+        <li>IDOR / Broken Object Auth</li>
+        <li>CSRF</li>
+        <li>GraphQL injection</li>
+        <li>WAF bypass techniques</li>
+      </ul>
+    </div>
+    <div class="skill-group">
+      <h3>Tools</h3>
+      <ul>
+        <li>Burp Suite Community</li>
+        <li>Kali Linux</li>
+        <li>Obsidian (documentation)</li>
+        <li>Metasploit</li>
+        <li>crt.sh / Shodan</li>
+      </ul>
+    </div>
+    <div class="skill-group">
+      <h3>Concepts</h3>
+      <ul>
+        <li>GraphQL persisted queries</li>
+        <li>Session-based auth flows</li>
+        <li>WAF fingerprinting</li>
+        <li>Next.js / React security</li>
+        <li>REST &amp; GraphQL API design</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="blog">
+  <div class="section-label">04 // blog</div>
+  <h2>Writeups</h2>
+  <div class="blog-list">
+    <div class="blog-coming">
+      // Writeups coming soon. First posts will cover GraphQL persisted query recon and Akamai WAF fingerprinting from real engagements.
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="contact">
+  <div class="section-label">05 // contact</div>
+  <h2>Get in touch</h2>
+  <div class="contact-grid">
+    <div class="contact-text">
+      <p>Open to collaboration, responsible disclosure discussions, or just talking about web security. Reach me through any of the channels below.</p>
+      <br>
+      <p style="color: var(--text-dim); font-size: 13px;">All vulnerability findings are reported through the Intigriti platform within program rules. Do not contact me regarding undisclosed vulnerabilities outside of official channels.</p>
+    </div>
+    <div class="contact-links">
+      <a href="https://github.com/ortlieb" target="_blank" class="contact-link">
+        <div>
+          <div class="link-label">GitHub</div>
+          <div class="link-value">github.com/ortlieb</div>
+        </div>
+      </a>
+      <a href="https://app.intigriti.com/profile/g00glym00gly" target="_blank" class="contact-link">
+        <div>
+          <div class="link-label">Intigriti</div>
+          <div class="link-value">g00glym00gly</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/fernandoortlieb" target="_blank" class="contact-link">
+        <div>
+          <div class="link-label">LinkedIn</div>
+          <div class="link-value">Fernando R. Ortlieb</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<footer>
+  <span>Fernando R. Ortlieb // g00glym00gly</span>
+  <span style="color: var(--green);">[ responsible disclosure only ]</span>
+</footer>
+
+</body>
+</html>
